@@ -1,37 +1,36 @@
 import 'package:darularqam/models/ApiRequestNames.dart';
-import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
-import 'package:darularqam/widgets/BookListWidget.dart';
+import 'package:darularqam/models/SermonModel.dart';
 import 'package:darularqam/widgets/CustomBottomNavigation.dart';
+import 'package:darularqam/widgets/SermonListViewBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert' as convert;
 
 import 'package:toast/toast.dart';
-class BuugaagtaScreen extends StatelessWidget {
-BuugaagtaScreen({this.pageIndex});
-final pageIndex;
 
-getBookList(BuildContext context) async {
-  CustomHttpRequestModel requestModel = CustomHttpRequestModel();
-  Response response =
-  await requestModel.makeApiRequest(url: ApiRequestName.getBooksList);
+class SermonScreen extends StatelessWidget {
+  getSermonsList(BuildContext context) async {
+    CustomHttpRequestModel requestModel = CustomHttpRequestModel();
+    Response response =
+        await requestModel.makeApiRequest(url: ApiRequestName.getLatestSermons);
 
-  if (response.statusCode != 200) return -1;
-  var jsonResponse = convert.jsonDecode(response.body);
-  if (jsonResponse["isSuccess"] == false) {
-    Toast.show(jsonResponse["errorMessage"].toString(), context,
-        backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
+    if (response.statusCode != 200) return -1;
+    var jsonResponse = convert.jsonDecode(response.body);
+    if (jsonResponse["isSuccess"] == false) {
+      Toast.show(jsonResponse["errorMessage"].toString(), context,
+          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
+    }
+    var lessonList = jsonResponse["data"];
+    int lessonCount = lessonList.length;
+    List<SermonModel> sermons = [];
+    for (int i = 0; i < lessonCount; i++) {
+      sermons.add(SermonModel(lessonList[i]));
+    }
+    return sermons;
   }
-  var bookLIst = jsonResponse["data"];
-  int bookCount = bookLIst.length;
-  List<BookModel> books = [];
-  for (int i = 0; i < bookCount; i++) {
-    books.add(BookModel(bookLIst[i]));
-  }
-  return books;
-}
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,9 +69,18 @@ getBookList(BuildContext context) async {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Muxaadarooyinka / Qudbooyinka',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: FutureBuilder(
-                    future: getBookList(context),
+                    future: getSermonsList(context),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return Center(
@@ -89,11 +97,18 @@ getBookList(BuildContext context) async {
                         return Center(
                           child: Text(
                               'We are sorry. Our server is experiencing some problems.'
-                                  ' Try again '),
+                              ' Try again '),
                         );
                       }
-                      List<BookModel> books = snapshot.data;
-                      return BookListBuilder(books: books);
+                      if (snapshot.data.length <= 0) {
+                        return Center(
+                          child: Text('Wax Muxaadaro ah kuma jiro'),
+                        );
+                      }
+                      List<SermonModel> sermons = snapshot.data;
+                      return SermonListViewBuilder(
+                        sermons: sermons,
+                      );
                     },
                   ),
                 )
@@ -103,7 +118,7 @@ getBookList(BuildContext context) async {
         ),
       ),
       bottomNavigationBar: BuildCustomBottomNavigationWidget(
-        currentIndex: pageIndex,
+        currentIndex: 3,
       ),
     );
   }

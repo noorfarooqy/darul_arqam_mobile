@@ -17,7 +17,10 @@ class LessonModel {
     lessonAudioUrl = data["lesson_audio_url"];
     lessonFileSize = (data["file_size"] / 1000000);
     sheekhInfo = SheekhModel(data["sheekh_info"]);
-    bookInfo = BookModel(data["book_info"]);
+    if(data["book_info"].runtimeType == BookModel)
+      bookInfo = data["book_info"];
+    else
+      bookInfo = BookModel(data["book_info"]) ?? null;
   }
   int lessonId;
   int bookId;

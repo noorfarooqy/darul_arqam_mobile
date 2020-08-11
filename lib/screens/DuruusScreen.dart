@@ -1,10 +1,10 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:darularqam/models/ApiRequestNames.dart';
-import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/LessonModel.dart';
 import 'package:darularqam/widgets/CustomBottomNavigation.dart';
+import 'package:darularqam/widgets/LessonListViewBuilder.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
@@ -74,6 +74,15 @@ class DuruusScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Duruusta ugu danbeesay',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: FutureBuilder(
                     future: getLessonList(context),
@@ -102,83 +111,7 @@ class DuruusScreen extends StatelessWidget {
                         );
                       }
                       List<LessonModel> lessons = snapshot.data;
-                      return ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: lessons.length,
-                        itemBuilder: (context, index) {
-                          AudioPlayer audioPlayer;
-                          return Card(
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                children: <Widget>[
-                                  CircleAvatar(
-                                    maxRadius: 20,
-                                    minRadius: 10,
-                                    backgroundColor: Colors.blue,
-                                    child: Text(
-                                      lessons[index].lessonNumber.toString(),
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                lessons[index].lessonTitle,
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                              ),
-                                              Text(lessons[index]
-                                                  .sheekhInfo
-                                                  .sheekhName),
-                                              Text(
-                                                double.parse(lessons[index]
-                                                            .lessonFileSize
-                                                            .toString())
-                                                        .toStringAsFixed(2) +
-                                                    ' MB',
-                                                style: TextStyle(
-                                                  fontSize: 11,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          GestureDetector(
-                                            child:
-                                                Icon(Icons.play_circle_outline),
-                                            onTap: ()async{
-                                              audioPlayer = AudioPlayer();
-                                              Navigator.pushNamed(context,
-                                              '/audioPlayerScreen', arguments: {
-                                                'lessonModel' : lessons[index],
-                                                    'audioPlayer' : audioPlayer,
-                                                  });
-                                            },
-                                            
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      );
+                      return LessonListViewBuilder(lessons: lessons);
                     },
                   ),
                 )
@@ -193,6 +126,7 @@ class DuruusScreen extends StatelessWidget {
     );
   }
 }
+
 
 
 class MiniPlayer extends StatefulWidget {

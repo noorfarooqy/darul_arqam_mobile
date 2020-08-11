@@ -1,7 +1,12 @@
 import 'package:darularqam/screens/AudioPlayerScreen.dart';
 import 'package:darularqam/screens/BuugaagtaScreen.dart';
 import 'package:darularqam/screens/DuruusScreen.dart';
+import 'package:darularqam/screens/GivenBookLessonsScreen.dart';
+import 'package:darularqam/screens/GivenSheekhBooksScreen.dart';
 import 'package:darularqam/screens/HomePageScreen.dart';
+import 'package:darularqam/screens/SermonAudioPlayer.dart';
+import 'package:darularqam/screens/SermonScreen.dart';
+import 'package:darularqam/screens/SettingsScreen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -37,6 +42,11 @@ class MyApp extends StatelessWidget {
         '/duruuspage' :(context) => DuruusScreen(pageIndex: 1,),
         '/buugaagScreen' : (context) => BuugaagtaScreen(pageIndex: 2,),
         '/audioPlayerScreen' : (context) => AudioPlayerScreen(),
+        '/sermonScreen' : (context) => SermonScreen(),
+        '/settingsScreen' : (context) => SettingsScreen(),
+        '/givenSheekhBooksScreen' : (context)  => GivenSheekhBooksScreen(),
+        '/givenBookLessonsScreen' : (context) => GivenBookLessonsScreen(),
+        '/sermonAudioPlayer' : (context) => SermonAudioPlayer()
       } ,
     );
   }

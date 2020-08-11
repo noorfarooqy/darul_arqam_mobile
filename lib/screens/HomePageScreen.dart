@@ -4,7 +4,6 @@ import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/SheekhModel.dart';
 import 'package:darularqam/widgets/CustomBottomNavigation.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
 import 'package:toast/toast.dart';
 import 'dart:convert' as convert;
@@ -113,44 +112,77 @@ class HomePageScreen extends StatelessWidget {
                             mainAxisSpacing: 7.0,
                           ),
                           itemBuilder: (context, int index) {
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10)),
-                              ),
-                              child: Column(
-                                children: <Widget>[
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(top: 8.0),
-                                      child: Image.asset(
-                                        'assets/images/islamicAudioIcon.png',
+                            return GestureDetector(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 8.0),
+                                        child: Image.asset(
+                                          'assets/images/islamicAudioIcon.png',
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        top: 8.0, left: 5),
-                                    child: Text(
-                                      sheekhs[index].sheekhName,
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontWeight: FontWeight.bold,
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          top: 8.0, left: 5),
+                                      child: Text(
+                                        sheekhs[index].sheekhName.length > 20 ?
+                                        sheekhs[index].sheekhName.substring(0,20)+'...':
+                                        sheekhs[index].sheekhName,
+                                        style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 5.0, top: 8.0,bottom: 8.0),
-                                    child: Text(
-                                      sheekhs[index].bookCount.toString() +' kitaab',
-                                      style: TextStyle(),
-                                    ),
-                                  )
-                                ],
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                          left: 5.0, top: 8.0,bottom: 8.0),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Row(
+                                            mainAxisAlignment : MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(Icons.book,size: 15,),
+                                              Text(
+                                                sheekhs[index].bookCount.toString() +' kitaab',
+                                                style: TextStyle(),
+                                              ),
+                                            ],
+                                          ),
+                                          Row(
+                                            mainAxisAlignment : MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Icon(Icons.audiotrack,size: 15,),
+                                              Flexible(
+                                                child: Text(
+                                                  sheekhs[index].lessonCount.toString() +' Duruus',
+                                                  overflow: TextOverflow.clip,
+                                                  maxLines: 1,
+
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
+                              onTap: (){
+                                Navigator.pushNamed(context, '/givenSheekhBooksScreen',
+                                arguments: sheekhs[index]);
+                              },
                             );
                           },
                         ),

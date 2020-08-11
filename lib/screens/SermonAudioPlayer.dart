@@ -1,15 +1,16 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/LessonModel.dart';
+import 'package:darularqam/models/SermonModel.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:toast/toast.dart';
 
-class AudioPlayerScreen extends StatelessWidget {
+class SermonAudioPlayer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Map<String,dynamic> args = ModalRoute.of(context).settings.arguments;
-    LessonModel lessonModel =args["lessonModel"];
+    SermonModel sermonModel =args["sermonModel"];
     AudioPlayer audioPlayer = args["audioPlayer"];
     return Scaffold(
       backgroundColor: ColorCodesModel.swatch1,
@@ -20,8 +21,8 @@ class AudioPlayerScreen extends StatelessWidget {
           onPressed: (){
             audioPlayer.setNotification(
               title: 'Daarul Arqam',
-              albumTitle: lessonModel.lessonTitle,
-              artist: lessonModel.sheekhInfo.sheekhName,
+              albumTitle: sermonModel.sermonTitle,
+              artist: sermonModel.sheekhInfo.sheekhName,
               forwardSkipInterval: Duration(seconds: 5),
             );
             audioPlayer.stop();
@@ -34,7 +35,7 @@ class AudioPlayerScreen extends StatelessWidget {
       body: Container(
         width: MediaQuery.of(context).size.width,
         child: SingleChildScrollView(
-          child: PlayerWidget(lessonModel: lessonModel,audioPlayer: audioPlayer,)
+            child: PlayerWidget(sermonModel: sermonModel,audioPlayer: audioPlayer,)
         ),
       ),
     );
@@ -42,20 +43,20 @@ class AudioPlayerScreen extends StatelessWidget {
 }
 
 class PlayerWidget extends StatefulWidget {
-  PlayerWidget({this.lessonModel,this.audioPlayer});
-  final LessonModel lessonModel;
+  PlayerWidget({this.sermonModel,this.audioPlayer});
+  final SermonModel sermonModel;
   final AudioPlayer audioPlayer;
   @override
   _PlayerWidgetTrackerState createState() => _PlayerWidgetTrackerState();
 }
 
 class _PlayerWidgetTrackerState extends State<PlayerWidget> {
-  playAudio(AudioPlayer audioPlayer, LessonModel lessonModel,BuildContext context)async{
+  playAudio(AudioPlayer audioPlayer, SermonModel sermonModel,BuildContext context)async{
     int result;
     if(audioPlayer.state == AudioPlayerState.PAUSED)
-    result = await audioPlayer.play(lessonModel.lessonAudioUrl);
+      result = await audioPlayer.play(sermonModel.sermonFileUrl);
     else if(audioPlayer.state != AudioPlayerState.PLAYING)
-      result = await audioPlayer.play(lessonModel.lessonAudioUrl);
+      result = await audioPlayer.play(sermonModel.sermonFileUrl);
     if(result != 1 && audioPlayer.state != AudioPlayerState.PLAYING){
       Toast.show('Can\'t play audio.', context,
           backgroundColor: Colors.red.shade700,duration: Toast.LENGTH_LONG);
@@ -125,7 +126,7 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
       });
     });
   }
-  
+
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
@@ -155,13 +156,13 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
           ),
         ),
         Text(
-          widget.lessonModel.lessonTitle,
+          widget.sermonModel.sermonTitle,
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         Text(
-          widget.lessonModel.sheekhInfo.sheekhName,
+          widget.sermonModel.sheekhInfo.sheekhName,
         ),
         Slider(
           onChanged: (va){},
@@ -173,7 +174,7 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
         SizedBox(
           height: 20,
           child: Text(
-            getHours() +':'+getMinutes()+':'+getSeconds()
+              getHours() +':'+getMinutes()+':'+getSeconds()
           ),
         ),
         Row(
@@ -193,7 +194,7 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
                 if(isPlaying)
                   pauseAudio(widget.audioPlayer,context);
                 else
-                playAudio(widget.audioPlayer, widget.lessonModel, context);
+                  playAudio(widget.audioPlayer, widget.sermonModel, context);
               },
               icon: isPlaying ? Icon(FontAwesomeIcons.pause) :
               Icon(FontAwesomeIcons.play),
@@ -218,8 +219,9 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
             IconButton(
               onPressed: () async{
                 int currentPosition = await widget.audioPlayer.getCurrentPosition();
+                Toast.show(currentPosition.toString(),context);
                 widget.audioPlayer.seek(
-                  Duration(milliseconds: (await widget.audioPlayer.getCurrentPosition()+5000))
+                    Duration(milliseconds: (await widget.audioPlayer.getCurrentPosition()+5000))
                 );
               },
               icon: Icon(FontAwesomeIcons.fastForward),
