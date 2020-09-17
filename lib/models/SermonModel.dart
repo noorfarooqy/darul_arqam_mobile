@@ -1,10 +1,8 @@
-
 import 'package:darularqam/models/SheekhModel.dart';
 
-class SermonModel{
-
-  SermonModel(data){
-    if(data != null){
+class SermonModel {
+  SermonModel(data) {
+    if (data != null) {
       sermonId = data["id"];
       sheekhId = data["sheekh_id"];
       sermonTitle = data["sermon_title"];
@@ -26,7 +24,6 @@ class SermonModel{
   String sermonCreatedAt;
   String sermonUpdatedAt;
   String sermonFileUrl;
-
 
   SheekhModel sheekhInfo;
 }

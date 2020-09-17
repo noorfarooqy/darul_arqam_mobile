@@ -1,7 +1,6 @@
 import 'package:darularqam/models/BookModel.dart';
 import 'package:flutter/material.dart';
 
-
 class BookListBuilder extends StatelessWidget {
   const BookListBuilder({
     Key key,
@@ -22,12 +21,12 @@ class BookListBuilder extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 IconButton(
-                  icon:Icon( Icons.book),
+                  icon: Icon(Icons.book),
                   iconSize: 100,
                   color: Colors.orange,
-                  onPressed: (){
+                  onPressed: () {
                     Navigator.pushNamed(context, '/givenBookLessonsScreen',
-                    arguments: books[index]);
+                        arguments: books[index]);
                   },
                 ),
                 Expanded(
@@ -39,18 +38,18 @@ class BookListBuilder extends StatelessWidget {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text(
-                              books[index].bookName,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                            Container(
+                              width: MediaQuery.of(context).size.width * 0.4,
+                              child: Text(
+                                books[index].bookName ?? 'unknown',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
+                            Text(books[index].sheekhInfo.sheekhName),
                             Text(
-                                books[index].sheekhInfo.sheekhName
-                            ),
-                            Text(
-                              books[index].lessonCount.toString()+
-                                  ' duruus',
+                              books[index].lessonCount.toString() + ' duruus',
                               style: TextStyle(
                                 fontSize: 11,
                               ),

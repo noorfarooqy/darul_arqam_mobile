@@ -73,9 +73,7 @@ class SermonScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'Muxaadarooyinka / Qudbooyinka',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold
-                    ),
+                    style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
                 Expanded(
@@ -100,12 +98,12 @@ class SermonScreen extends StatelessWidget {
                               ' Try again '),
                         );
                       }
-                      if (snapshot.data.length <= 0) {
+                      List<SermonModel> sermons = snapshot.data;
+                      if (sermons.length <= 0) {
                         return Center(
                           child: Text('Wax Muxaadaro ah kuma jiro'),
                         );
                       }
-                      List<SermonModel> sermons = snapshot.data;
                       return SermonListViewBuilder(
                         sermons: sermons,
                       );
