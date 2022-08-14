@@ -1,4 +1,4 @@
-import 'package:darularqam/models/ApiRequestNames.dart';
+import 'package:darularqam/models/ApiEndpoints.dart';
 import 'package:darularqam/models/BookCategoriesModel.dart';
 import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
@@ -6,7 +6,7 @@ import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/ScreenArguments.dart';
 import 'package:darularqam/models/SheekhModel.dart';
 import 'package:darularqam/screens/GivenSheekhBooksScreen.dart';
-import 'package:darularqam/widgets/ErrorWidget.dart';
+import 'package:darularqam/widgets/custom_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart';
@@ -19,14 +19,14 @@ class CategoriesScreen extends StatelessWidget {
   getCategories(context, SheekhModel sheekhModel) async {
     CustomHttpRequestModel requestModel = CustomHttpRequestModel();
     Response response = await requestModel.makeApiRequest(
-        url: ApiRequestName.getSheekhCategoryList +
+        url: ApiEndpoints.getSheekhCategoryList +
             sheekhModel.sheekhId.toString());
 
     if (response.statusCode != 200) return -1;
     var jsonResponse = convert.jsonDecode(response.body);
     if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(), context,
-          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
+      Toast.show(jsonResponse["errorMessage"].toString(),
+          backgroundColor: Colors.red, duration: Toast.lengthLong);
     }
     var catList = jsonResponse["data"];
     print('list');

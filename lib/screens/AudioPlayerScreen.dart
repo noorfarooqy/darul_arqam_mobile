@@ -41,12 +41,12 @@ class AudioPlayerScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         leading: IconButton(
           onPressed: () {
-            audioPlayer.setNotification(
-              title: 'Daarul Arqam',
-              albumTitle: lessonModel.lessonTitle,
-              artist: lessonModel.sheekhInfo.sheekhName,
-              forwardSkipInterval: Duration(seconds: 5),
-            );
+            // audioPlayer.setNotification(
+            //   title: 'Daarul Arqam',
+            //   albumTitle: lessonModel.lessonTitle,
+            //   artist: lessonModel.sheekhInfo.sheekhName,
+            //   forwardSkipInterval: Duration(seconds: 5),
+            // );
             audioPlayer.stop();
             audioPlayer.release();
             Navigator.pop(context, audioPlayer);
@@ -81,36 +81,58 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
   playAudio(AudioPlayer audioPlayer, LessonModel lessonModel,
       BuildContext context) async {
     int result;
-    if (audioPlayer.state == AudioPlayerState.PAUSED)
-      result = await audioPlayer.play(lessonModel.lessonAudioUrl);
-    else if (audioPlayer.state != AudioPlayerState.PLAYING)
-      result = await audioPlayer.play(lessonModel.lessonAudioUrl);
-    if (result != 1 && audioPlayer.state != AudioPlayerState.PLAYING) {
-      Toast.show('Can\'t play audio.', context,
-          backgroundColor: Colors.red.shade700, duration: Toast.LENGTH_LONG);
-    } else {
+    if (audioPlayer.state == PlayerState.paused) {
+      await audioPlayer.resume();
       setState(() {
         isPlaying = true;
       });
-      print('should play audio ' + result.toString());
+    } else {
+      await audioPlayer.play(UrlSource(lessonModel.lessonAudioUrl),
+          mode: PlayerMode.mediaPlayer);
+      setState(() {
+        isPlaying = true;
+
+        isDownloaded = true;
+      });
     }
+    // await audioPlayer.setSourceUrl(lessonModel.lessonAudioUrl);
+    // audioPlayer.pl
+    // audioPlayer.resume();
+    // else if (audioPlayer.state != AudioPlayerState.PLAYING)
+    //   result = await audioPlayer.play(lessonModel.lessonAudioUrl);
+    // if (result != 1 && audioPlayer.state != AudioPlayerState.PLAYING) {
+    //   Toast.show('Can\'t play audio.', context,
+    //       backgroundColor: Colors.red.shade700, duration: Toast.LENGTH_LONG);
+    // } else {
+    //   setState(() {
+    //     isPlaying = true;
+    //   });
+    //   print('should play audio ' + result.toString());
+    // }
   }
 
   pauseAudio(AudioPlayer audioPlayer, BuildContext context) async {
-    int result = await audioPlayer.pause();
-    if (result != 1) {
-      Toast.show('Can\'t play audio.', context,
-          backgroundColor: Colors.red.shade700, duration: Toast.LENGTH_LONG);
-    } else {
+    if (audioPlayer.state == PlayerState.playing) {
+      await audioPlayer.pause();
       setState(() {
         isPlaying = false;
         isPaused = true;
       });
     }
+    // if (result != 1) {
+    //   Toast.show('Can\'t play audio.', context,
+    //       backgroundColor: Colors.red.shade700, duration: Toast.LENGTH_LONG);
+    // } else {
+    //   setState(() {
+    //     isPlaying = false;
+    //     isPaused = true;
+    //   });
+    // }
   }
 
   bool isPlaying = false;
   bool isPaused = false;
+  bool isDownloaded = false;
   double sliderValue = 0;
   int hours = 0;
   int seconds = 0;
@@ -131,7 +153,7 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
   @override
   initState() {
     super.initState();
-    if (widget.audioPlayer.state == AudioPlayerState.PLAYING) {
+    if (widget.audioPlayer.state == PlayerState.playing) {
       setState(() {
         isPaused = false;
         isPlaying = true;
@@ -144,7 +166,7 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
         });
       }
     });
-    widget.audioPlayer.onAudioPositionChanged.listen((event) {
+    widget.audioPlayer.onPositionChanged.listen((event) {
       setState(() {
         hours = event.inHours;
         seconds = event.inSeconds;
@@ -200,7 +222,13 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
         ),
         SizedBox(
           height: 20,
-          child: Text(getHours() + ':' + getMinutes() + ':' + getSeconds()),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(getHours() + ':' + getMinutes() + ':' + getSeconds()),
+              Text(isDownloaded ? '' : '(Donwloading...)')
+            ],
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -209,7 +237,8 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
               onPressed: () async {
                 widget.audioPlayer.seek(Duration(
                     milliseconds:
-                        (await widget.audioPlayer.getCurrentPosition() -
+                        ((await widget.audioPlayer.getCurrentPosition())
+                                .inMilliseconds -
                             5000)));
               },
               icon: Icon(FontAwesomeIcons.fastBackward),
@@ -245,7 +274,8 @@ class _PlayerWidgetTrackerState extends State<PlayerWidget> {
             IconButton(
               onPressed: () async {
                 int currentPosition =
-                    await widget.audioPlayer.getCurrentPosition();
+                    (await widget.audioPlayer.getCurrentPosition())
+                        .inMilliseconds;
                 widget.audioPlayer
                     .seek(Duration(milliseconds: (currentPosition + 5000)));
               },

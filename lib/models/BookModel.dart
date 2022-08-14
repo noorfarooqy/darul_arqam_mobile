@@ -1,12 +1,10 @@
 import 'package:darularqam/models/SheekhModel.dart';
 
 class BookModel {
-
-  BookModel(data,{ SheekhModel sheekhModel}){
-    if(data != null){
-      print('we areadhed ');
-      bookId = data["id"];
-      sheekhId = data["sheekh_id"];
+  BookModel(data, {SheekhModel sheekhModel}) {
+    if (data != null) {
+      bookId = int.parse(data["id"].toString());
+      sheekhId = int.parse(data["sheekh_id"].toString());
       bookName = data["book_name"];
       bookWrittenBy = data["book_written_by"];
       bookDescription = data["book_description"];
@@ -16,14 +14,17 @@ class BookModel {
       bookCreatedAt = data["created_at"];
       bookUpdatedAt = data["updated_at"];
       bookIcon = data["book_icon"];
-      lessonCount = data["lesson_count"];
+      lessonCount = data['lesson_count'] != null
+          ? int.parse(data["lesson_count"].toString())
+          : 1;
 
-      if(sheekhModel != null)
-        sheekhInfo =sheekhModel;
+      if (sheekhModel != null)
+        sheekhInfo = sheekhModel;
       else
-      sheekhInfo = data["sheekh_info"] != null ? SheekhModel(data["sheekh_info"]) : null;
+        sheekhInfo = data["sheekh_info"] != null
+            ? SheekhModel(data["sheekh_info"])
+            : null;
     }
-
   }
 
   int bookId;

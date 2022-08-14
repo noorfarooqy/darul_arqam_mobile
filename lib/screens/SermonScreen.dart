@@ -1,9 +1,9 @@
-import 'package:darularqam/models/ApiRequestNames.dart';
+import 'package:darularqam/models/ApiEndpoints.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/SermonModel.dart';
-import 'package:darularqam/widgets/CustomBottomNavigation.dart';
-import 'package:darularqam/widgets/SermonListViewBuilder.dart';
+import 'package:darularqam/widgets/custom_bottom_navigation.dart';
+import 'package:darularqam/widgets/sermon_list_view_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert' as convert;
@@ -14,13 +14,13 @@ class SermonScreen extends StatelessWidget {
   getSermonsList(BuildContext context) async {
     CustomHttpRequestModel requestModel = CustomHttpRequestModel();
     Response response =
-        await requestModel.makeApiRequest(url: ApiRequestName.getLatestSermons);
+        await requestModel.makeApiRequest(url: ApiEndpoints.getLatestSermons);
 
     if (response.statusCode != 200) return -1;
     var jsonResponse = convert.jsonDecode(response.body);
     if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(), context,
-          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
+      Toast.show(jsonResponse["errorMessage"].toString(),
+          backgroundColor: Colors.red, duration: Toast.lengthLong);
     }
     var lessonList = jsonResponse["data"];
     int lessonCount = lessonList.length;
@@ -36,7 +36,7 @@ class SermonScreen extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Stack(
-          overflow: Overflow.visible,
+          // overflow: Overflow.visible,
           children: <Widget>[
             Column(
               children: <Widget>[

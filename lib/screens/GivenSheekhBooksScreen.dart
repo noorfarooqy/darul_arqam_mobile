@@ -1,12 +1,12 @@
-import 'package:darularqam/models/ApiRequestNames.dart';
+import 'package:darularqam/models/ApiEndpoints.dart';
 import 'package:darularqam/models/BookCategoriesModel.dart';
 import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/ScreenArguments.dart';
 import 'package:darularqam/models/SheekhModel.dart';
-import 'package:darularqam/widgets/BookListWidget.dart';
-import 'package:darularqam/widgets/ErrorWidget.dart';
+import 'package:darularqam/widgets/book_list_widget.dart';
+import 'package:darularqam/widgets/custom_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert' as convert;
@@ -19,7 +19,7 @@ class GivenSheekhBooksScreen extends StatelessWidget {
       BuildContext context) async {
     CustomHttpRequestModel requestModel = CustomHttpRequestModel();
     Response response = await requestModel.makeApiRequest(
-        url: ApiRequestName.getSheekhCategoryBooks +
+        url: ApiEndpoints.getSheekhCategoryBooks +
             sheekhModel.sheekhId.toString() +
             '/' +
             category.categoryId.toString());
@@ -27,8 +27,8 @@ class GivenSheekhBooksScreen extends StatelessWidget {
     if (response.statusCode != 200) return -1;
     var jsonResponse = convert.jsonDecode(response.body);
     if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(), context,
-          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
+      Toast.show(jsonResponse["errorMessage"].toString(),
+          backgroundColor: Colors.red, duration: Toast.lengthLong);
     }
     var bookLIst = jsonResponse["data"]["books"];
     int bookCount = bookLIst.length;

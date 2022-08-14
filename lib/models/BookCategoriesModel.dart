@@ -5,9 +5,9 @@ class BookCategoriesModel {
     if (data != null) {
       print(data);
       categoryName = data['category_name'];
-      categoryId = data['id'];
+      categoryId = int.parse(data['id'].toString());
 
-      List<dynamic> catBooks = data['books'];
+      var catBooks = data['books'];
 
       books = [];
       parentCategory = BookCategoriesModel(data["parent"]);

@@ -3,13 +3,14 @@ import 'package:darularqam/models/SheekhModel.dart';
 class SermonModel {
   SermonModel(data) {
     if (data != null) {
-      sermonId = data["id"];
-      sheekhId = data["sheekh_id"];
+      sermonId = int.parse(data["id"].toString());
+      sheekhId = int.parse(data["sheekh_id"].toString());
       sermonTitle = data["sermon_title"];
       sermonLocation = data["sermon_location"];
       sermonCreatedAt = data["created_at"];
       sermonUpdatedAt = data["updated_at"];
-      sermonFileSize = (data["sermon_file_size"] / 1000000);
+      sermonFileSize =
+          (double.parse(data["sermon_file_size"].toString()) / 1000000);
       sermonFileUrl = data["sermon_file_url"];
 
       sheekhInfo = SheekhModel(data["sheekh_info"]);

@@ -1,10 +1,10 @@
-import 'package:darularqam/models/ApiRequestNames.dart';
+import 'package:darularqam/models/ApiEndpoints.dart';
 import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/LessonModel.dart';
-import 'package:darularqam/widgets/ErrorWidget.dart';
-import 'package:darularqam/widgets/LessonListViewBuilder.dart';
+import 'package:darularqam/widgets/custom_error_widget.dart';
+import 'package:darularqam/widgets/lesson_list_view_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'dart:convert' as convert;
@@ -15,13 +15,13 @@ class GivenBookLessonsScreen extends StatelessWidget {
   getGivenBookLessons(BookModel bookModel, BuildContext context) async {
     CustomHttpRequestModel requestModel = CustomHttpRequestModel();
     Response response = await requestModel.makeApiRequest(
-        url: ApiRequestName.getGivenBookLessons + bookModel.bookId.toString());
+        url: ApiEndpoints.getGivenBookLessons + bookModel.bookId.toString());
 
     if (response.statusCode != 200) return -1;
     var jsonResponse = convert.jsonDecode(response.body);
     if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(), context,
-          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
+      Toast.show(jsonResponse["errorMessage"].toString(),
+          backgroundColor: Colors.red, duration: Toast.lengthLong);
     }
     var lessonList = jsonResponse["data"]["casharada"];
     int lessonCount = lessonList.length;

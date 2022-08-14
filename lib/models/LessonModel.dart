@@ -1,23 +1,21 @@
-
-
 import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/SheekhModel.dart';
 
 class LessonModel {
-
-  LessonModel(data){
-    lessonId = data["id"];
-    bookId = data["book_id"];
-    sheekhId = data["sheekh_id"];
+  LessonModel(data) {
+    lessonId = int.parse(data["id"].toString());
+    bookId = int.parse(data["book_id"].toString());
+    sheekhId = int.parse(data["sheekh_id"].toString());
     lessonTitle = data["lesson_title"];
     lessonHidden = data["lesson_hidden"] == 1;
-    lessonNumber = data["lesson_number"];
+    lessonNumber = int.parse(data["lesson_number"].toString());
+
     lessonCreatedAt = data["created_at"];
     lessonUpdatedAt = data["updated_at"];
     lessonAudioUrl = data["lesson_audio_url"];
-    lessonFileSize = (data["file_size"] / 1000000);
+    lessonFileSize = (double.parse(data["file_size"].toString()) / 1000000);
     sheekhInfo = SheekhModel(data["sheekh_info"]);
-    if(data["book_info"].runtimeType == BookModel)
+    if (data["book_info"].runtimeType == BookModel)
       bookInfo = data["book_info"];
     else
       bookInfo = BookModel(data["book_info"]) ?? null;

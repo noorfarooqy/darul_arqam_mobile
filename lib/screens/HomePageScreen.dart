@@ -1,225 +1,502 @@
-import 'package:darularqam/models/ApiRequestNames.dart';
+import 'package:darularqam/models/ApiEndpoints.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/SheekhModel.dart';
 import 'package:darularqam/screens/CategoriesScreen.dart';
-import 'package:darularqam/widgets/CustomBottomNavigation.dart';
+import 'package:darularqam/services/book_services.dart';
+import 'package:darularqam/services/lesson_services.dart';
+import 'package:darularqam/services/sheekh_services.dart';
+import 'package:darularqam/widgets/custom_app_bar.dart';
+import 'package:darularqam/widgets/custom_bottom_navigation.dart';
+import 'package:darularqam/widgets/custom_error_widget.dart';
+import 'package:darularqam/widgets/sheekh_gridview_shimmer.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:toast/toast.dart';
 import 'dart:convert' as convert;
 
-class HomePageScreen extends StatelessWidget {
-  HomePageScreen({this.pageIndex});
-  final pageIndex;
-  getSheekhList(BuildContext context) async {
-    CustomHttpRequestModel requestModel = CustomHttpRequestModel();
+class HomePageScreen extends StatefulWidget {
+  const HomePageScreen({this.pageIndex});
 
-    Response response = await requestModel
-        .makeApiRequest(url: ApiRequestName.getSheekhsList, body: {});
+  final int pageIndex;
+  @override
+  State<HomePageScreen> createState() => _HomePageScreenState();
+}
 
-    if (response.statusCode != 200) {
-      Toast.show('Server error - ', context,
-          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
-      return -1;
-    }
+class _HomePageScreenState extends State<HomePageScreen> {
+  getLatestSheikhList() async {
+    SheekhServices sheekhServices = SheekhServices();
+    await sheekhServices.getLatestSheekhs();
+    return sheekhServices;
+  }
 
-    var jsonResponse = convert.jsonDecode(response.body);
-    if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(), context,
-          backgroundColor: Colors.red, duration: Toast.LENGTH_LONG);
-    }
-    var sheekhList = jsonResponse["data"];
-    int sheekhCount = sheekhList.length;
-    List<SheekhModel> sheekhs = [];
-    for (int i = 0; i < sheekhCount; i++) {
-      sheekhs.add(SheekhModel(sheekhList[i]));
-    }
-    return sheekhs;
+  getLatestBooks() async {
+    BookServices bookServices = BookServices();
+    await bookServices.getLatestBooks();
+    return bookServices;
+  }
+
+  getLatestLessons() async {
+    LessonServices lessonServices = LessonServices();
+    await lessonServices.getLatestLessons();
+    return lessonServices;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorCodesModel.swatch1,
+      appBar: customAppBar(),
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Stack(
-          overflow: Overflow.visible,
-          children: <Widget>[
-            Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.grey.shade200,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Image(
-                          height: 40,
-                          image: AssetImage('assets/images/logo2.png'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'DAARUL-ARQAM',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: ColorCodesModel.swatch4),
-                          ),
-                        ),
-                      ],
+          child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 10, left: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Latest Sheekhs',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
-                Expanded(
-                  child: FutureBuilder(
-                    future: getSheekhList(context),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        print(snapshot.error);
-                        return Center(
-                          child: Text(
-                              'This is embarrassing. Something went wrong '),
-                        );
-                      }
-                      if (snapshot.data == -1) {
-                        return Center(
-                          child: Text(
-                              'We are sorry. Our server is experiencing some problems.'
-                              ' Try again '),
-                        );
-                      }
-                      List<SheekhModel> sheekhs = snapshot.data;
-                      var orientation = MediaQuery.of(context).orientation;
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                        child: GridView.builder(
-                          itemCount: sheekhs.length,
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount:
-                                (orientation == Orientation.portrait) ? 2 : 3,
-                            crossAxisSpacing: 7.0,
-                            mainAxisSpacing: 7.0,
-                          ),
-                          itemBuilder: (context, int index) {
-                            return GestureDetector(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(10)),
-                                ),
-                                child: Column(
-                                  children: <Widget>[
-                                    Expanded(
-                                      child: Padding(
-                                        padding:
-                                            const EdgeInsets.only(top: 8.0),
-                                        child: Image.asset(
-                                          'assets/images/islamicAudioIcon.png',
-                                        ),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 8.0, left: 5),
-                                      child: Text(
-                                        sheekhs[index].sheekhName.length > 20
-                                            ? sheekhs[index]
-                                                    .sheekhName
-                                                    .substring(0, 20) +
-                                                '...'
-                                            : sheekhs[index].sheekhName,
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 5.0, top: 8.0, bottom: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Icon(
-                                                Icons.book,
-                                                size: 15,
-                                              ),
-                                              Text(
-                                                sheekhs[index]
-                                                        .bookCount
-                                                        .toString() +
-                                                    ' kitaab',
-                                                style: TextStyle(),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Icon(
-                                                Icons.audiotrack,
-                                                size: 15,
-                                              ),
-                                              Flexible(
-                                                child: Text(
-                                                  sheekhs[index]
-                                                          .lessonCount
-                                                          .toString() +
-                                                      ' Duruus',
-                                                  overflow: TextOverflow.clip,
-                                                  maxLines: 1,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                              onTap: () {
-//                                Navigator.pushNamed(context, '/givenSheekhBooksScreen',
-//                                arguments: sheekhs[index]);
-                                Navigator.pushNamed(
-                                    context, CategoriesScreen.screenName,
-                                    arguments: sheekhs[index]);
-                              },
-                            );
-                          },
-                        ),
-                      );
-                    },
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: Text(
+                      'View all',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                )
-              ],
+                ],
+              ),
+            ),
+            FutureBuilder(
+              future: getLatestSheikhList(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SheekhGridShimmer();
+                }
+
+                if (snapshot.hasError) {
+                  return CustomErrorWidget(
+                      errorMessage: snapshot.error.toString());
+                }
+
+                SheekhServices sheekhServices = snapshot.data as SheekhServices;
+                if (sheekhServices.errorStatus) {
+                  return CustomErrorWidget(
+                      errorMessage: sheekhServices.errorMessage);
+                }
+
+                int sheekhLength = sheekhServices.sheekhList.length;
+                int sheekhLengthTwo = 0;
+                print(sheekhServices.sheekhList.length);
+                if (sheekhLength > 6) {
+                  sheekhLength = int.parse((sheekhLength % 2 == 0
+                          ? sheekhLength / 2
+                          : ((sheekhLength - 1) / 2 + 1))
+                      .round()
+                      .toString());
+                  sheekhLengthTwo = int.parse(
+                      (sheekhServices.sheekhList.length % 2 == 0
+                              ? sheekhServices.sheekhList.length / 2
+                              : ((sheekhServices.sheekhList.length - 1) / 2))
+                          .round()
+                          .toString());
+                }
+                print(sheekhLength);
+                print(sheekhLengthTwo);
+                return Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: MediaQuery.of(context).size.height * 0.14,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: sheekhLength,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    decoration: BoxDecoration(
+                                      color: ColorCodesModel.swatch1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/logo2.png'),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      sheekhServices.sheekhList[index]
+                                          ['sheekh_name'],
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: MediaQuery.of(context).size.height * 0.14,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: sheekhLengthTwo,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    decoration: BoxDecoration(
+                                      color: ColorCodesModel.swatch1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/logo2.png'),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      sheekhServices.sheekhList[index]
+                                          ['sheekh_name'],
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              },
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10, left: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Latest Books',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: Text(
+                      'View all',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            FutureBuilder(
+              future: getLatestBooks(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SheekhGridShimmer();
+                }
+
+                if (snapshot.hasError) {
+                  return CustomErrorWidget(
+                      errorMessage: snapshot.error.toString());
+                }
+
+                BookServices bookServices = snapshot.data as BookServices;
+                if (bookServices.errorStatus) {
+                  return CustomErrorWidget(
+                      errorMessage: bookServices.errorMessage);
+                }
+
+                int bookLength = bookServices.bookList.length;
+                int bookLengthTwo = 0;
+                if (bookLength > 6) {
+                  bookLength = int.parse((bookLength % 2 == 0
+                          ? bookLength / 2
+                          : ((bookLength - 1) / 2 + 1))
+                      .round()
+                      .toString());
+                  bookLengthTwo = int.parse(
+                      (bookServices.bookList.length % 2 == 0
+                              ? bookServices.bookList.length / 2
+                              : ((bookServices.bookList.length - 1) / 2))
+                          .round()
+                          .toString());
+                }
+                return Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: MediaQuery.of(context).size.height * 0.14,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: bookLength,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    decoration: BoxDecoration(
+                                      color: ColorCodesModel.swatch1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: NetworkImage(bookServices
+                                            .bookList[index]['book_icon_url']),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      bookServices.bookList[index]['book_name'],
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: MediaQuery.of(context).size.height * 0.14,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: bookLengthTwo,
+                          itemBuilder: (context, index) {
+                            index += bookLength;
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    decoration: BoxDecoration(
+                                      color: ColorCodesModel.swatch1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: NetworkImage(bookServices
+                                            .bookList[index]['book_icon_url']),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      bookServices.bookList[index]['book_name'],
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              },
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 10, left: 5),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Latest Lessons',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(right: 10),
+                    child: Text(
+                      'View all',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            FutureBuilder(
+              future: getLatestLessons(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return SheekhGridShimmer();
+                }
+
+                if (snapshot.hasError) {
+                  return CustomErrorWidget(
+                      errorMessage: snapshot.error.toString());
+                }
+
+                LessonServices lessonServices = snapshot.data as LessonServices;
+                if (lessonServices.errorStatus) {
+                  return CustomErrorWidget(
+                      errorMessage: lessonServices.errorMessage);
+                }
+
+                int lessonLength = lessonServices.lessonsList.length;
+                int lessonLengthTwo = 0;
+                if (lessonLength > 6) {
+                  lessonLength = int.parse((lessonLength % 2 == 0
+                          ? lessonLength / 2
+                          : ((lessonLength - 1) / 2 + 1))
+                      .round()
+                      .toString());
+                  lessonLengthTwo = int.parse(
+                      (lessonServices.lessonsList.length % 2 == 0
+                              ? lessonServices.lessonsList.length / 2
+                              : ((lessonServices.lessonsList.length - 1) / 2))
+                          .round()
+                          .toString());
+                }
+                return Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: MediaQuery.of(context).size.height * 0.14,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: lessonLength,
+                          itemBuilder: (context, index) {
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    decoration: BoxDecoration(
+                                      color: ColorCodesModel.swatch1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/audio_icon.png'),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      lessonServices.lessonsList[index]
+                                          ['lesson_title'],
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                    Container(
+                      margin: EdgeInsets.all(5),
+                      height: MediaQuery.of(context).size.height * 0.14,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: lessonLengthTwo,
+                          itemBuilder: (context, index) {
+                            index += lessonLength;
+                            return Container(
+                              margin: EdgeInsets.all(5),
+                              child: Column(
+                                children: [
+                                  Container(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    decoration: BoxDecoration(
+                                      color: ColorCodesModel.swatch1,
+                                      borderRadius: BorderRadius.circular(10),
+                                      image: DecorationImage(
+                                        image: AssetImage(
+                                            'assets/images/audio_icon.png'),
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      lessonServices.lessonsList[index]
+                                          ['lesson_title'],
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BuildCustomBottomNavigationWidget(
-        currentIndex: pageIndex,
-      ),
+      )),
     );
   }
 }
