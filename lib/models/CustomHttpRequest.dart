@@ -2,8 +2,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 
 class CustomHttpRequestModel {
-  static const String siteUrl = 'http://daarul_arqam_web.test/';
-//   static const String siteUrl = 'https://daarularqam.drongo.vip/';
+  // static const String siteUrl = 'http://daarul_arqam_web.test/';
+  static const String siteUrl = 'https://daarularqam.org/';
+  // static const String siteUrl = 'https://daarularqam.drongo.vip/';
 
   // static const String siteUrl = 'http://127.0.0.1:8000/';
   String errorMessage = '';

@@ -6,6 +6,8 @@ import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/ScreenArguments.dart';
 import 'package:darularqam/models/SheekhModel.dart';
 import 'package:darularqam/screens/GivenSheekhBooksScreen.dart';
+import 'package:darularqam/services/sheekh_services.dart';
+import 'package:darularqam/widgets/books_listview_shimmer.dart';
 import 'package:darularqam/widgets/custom_error_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -15,20 +17,13 @@ import 'dart:convert' as convert;
 import 'package:toast/toast.dart';
 
 class CategoriesScreen extends StatelessWidget {
+  CategoriesScreen({@required this.givenSheekh});
+  final SheekhModel givenSheekh;
   static const String screenName = 'CategoriesScreen';
   getCategories(context, SheekhModel sheekhModel) async {
-    CustomHttpRequestModel requestModel = CustomHttpRequestModel();
-    Response response = await requestModel.makeApiRequest(
-        url: ApiEndpoints.getSheekhCategoryList +
-            sheekhModel.sheekhId.toString());
-
-    if (response.statusCode != 200) return -1;
-    var jsonResponse = convert.jsonDecode(response.body);
-    if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(),
-          backgroundColor: Colors.red, duration: Toast.lengthLong);
-    }
-    var catList = jsonResponse["data"];
+    SheekhServices sheekhServices = SheekhServices();
+    await sheekhServices.getGivenSheekhCategories(sheekhModel);
+    List catList = sheekhServices.categoriesList;
     print('list');
     print(catList);
     int catLen = catList.length;
@@ -41,10 +36,9 @@ class CategoriesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SheekhModel givenSheekh = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: ColorCodesModel.swatch1,
         leading: IconButton(
           onPressed: () {
             Navigator.pop(context);
@@ -83,9 +77,7 @@ class CategoriesScreen extends StatelessWidget {
         future: getCategories(context, givenSheekh),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: CircularProgressIndicator(),
-            );
+            return BooksListViewShimmer();
           }
           if (snapshot.hasError) {
             print(snapshot.error);
@@ -148,11 +140,12 @@ class CategoriesScreen extends StatelessWidget {
                             ],
                           )),
                       onTap: () {
-                        Navigator.pushNamed(
-                            context, GivenSheekhBooksScreen.screenName,
-                            arguments: BookCategoryScreenArgument(
-                                sheekhModel: givenSheekh,
-                                categoriesModel: category));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => GivenSheekhBooksScreen(
+                                    givenSheekh: givenSheekh,
+                                    category: category)));
                       },
                     ),
                   ),

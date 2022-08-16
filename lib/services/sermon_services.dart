@@ -5,29 +5,29 @@ import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/services/default_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LessonServices extends DefaultServices {
-  getLatestLessons() async {
+class SermonServices extends DefaultServices {
+  getLatestSermons() async {
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    // lessonsList =
-    //     jsonDecode(sharedPreferences.getString('latest_lessons') ?? '[]');
-    // if (lessonsList.isNotEmpty) {
-    //   print('found existing lessons list');
-    //   return;
-    // }
+    sermonList =
+        jsonDecode(sharedPreferences.getString('latest_sermons') ?? '[]');
+    if (sermonList.isNotEmpty) {
+      print('found existing sermon list');
+      return;
+    }
 
     CustomHttpRequestModel requestModel = CustomHttpRequestModel();
 
-    await requestModel.getRequest(uri: ApiEndpoints.getLessonsList);
+    await requestModel.getRequest(uri: ApiEndpoints.getLatestSermons);
 
     if (requestModel.errorStatus) {
       setError(requestModel.errorMessage);
     } else
-      lessonsList = requestModel.response['data'] as List;
-    if (lessonsList.isNotEmpty) {
+      sermonList = requestModel.response['data'] as List;
+    if (sermonList.isNotEmpty) {
       await sharedPreferences.setString(
-          'latest_lessons', jsonEncode(lessonsList));
+          'latest_sermons', jsonEncode(sermonList));
     }
   }
 
-  List lessonsList = [];
+  List sermonList = [];
 }

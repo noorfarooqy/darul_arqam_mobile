@@ -14,7 +14,7 @@ class AudioPlayerScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: ColorCodesModel.swatch1,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: ColorCodesModel.swatch1,
         title: Row(
           children: <Widget>[
             Image(
@@ -29,8 +29,9 @@ class AudioPlayerScreen extends StatelessWidget {
                   'DAARUL-ARQAM',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: 20,
                     color: ColorCodesModel.swatch4,
+                    fontFamily: 'Squada',
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -80,6 +81,7 @@ class PlayerWidget extends StatefulWidget {
 class _PlayerWidgetTrackerState extends State<PlayerWidget> {
   playAudio(AudioPlayer audioPlayer, LessonModel lessonModel,
       BuildContext context) async {
+    print(lessonModel.lessonAudioUrl);
     int result;
     if (audioPlayer.state == PlayerState.paused) {
       await audioPlayer.resume();

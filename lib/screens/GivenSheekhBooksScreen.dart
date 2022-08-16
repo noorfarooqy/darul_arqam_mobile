@@ -5,6 +5,8 @@ import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/ScreenArguments.dart';
 import 'package:darularqam/models/SheekhModel.dart';
+import 'package:darularqam/services/book_services.dart';
+import 'package:darularqam/services/sheekh_services.dart';
 import 'package:darularqam/widgets/book_list_widget.dart';
 import 'package:darularqam/widgets/custom_error_widget.dart';
 import 'package:flutter/material.dart';
@@ -14,27 +16,20 @@ import 'dart:convert' as convert;
 import 'package:toast/toast.dart';
 
 class GivenSheekhBooksScreen extends StatelessWidget {
-  static const String screenName = '/givenSheekhBooksScreen';
-  getGivenSheekhBooks(SheekhModel sheekhModel, BookCategoriesModel category,
-      BuildContext context) async {
-    CustomHttpRequestModel requestModel = CustomHttpRequestModel();
-    Response response = await requestModel.makeApiRequest(
-        url: ApiEndpoints.getSheekhCategoryBooks +
-            sheekhModel.sheekhId.toString() +
-            '/' +
-            category.categoryId.toString());
+  GivenSheekhBooksScreen({@required this.givenSheekh, @required this.category});
 
-    if (response.statusCode != 200) return -1;
-    var jsonResponse = convert.jsonDecode(response.body);
-    if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(),
-          backgroundColor: Colors.red, duration: Toast.lengthLong);
-    }
-    var bookLIst = jsonResponse["data"]["books"];
-    int bookCount = bookLIst.length;
+  final SheekhModel givenSheekh;
+  final BookCategoriesModel category;
+  static const String screenName = '/givenSheekhBooksScreen';
+  getGivenSheekhBooks(
+      SheekhModel sheekhModel, BookCategoriesModel category) async {
+    SheekhServices sheekhServices = SheekhServices();
+    await sheekhServices.getGivenSheekhBooks(sheekhModel, category);
+    List bookList = sheekhServices.bookList;
+    int bookCount = bookList.length;
     List<BookModel> books = [];
     for (int i = 0; i < bookCount; i++) {
-      books.add(BookModel(bookLIst[i], sheekhModel: sheekhModel));
+      books.add(BookModel(bookList[i], sheekhModel: sheekhModel));
     }
     print('-----done');
     return books;
@@ -42,9 +37,9 @@ class GivenSheekhBooksScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BookCategoryScreenArgument args = ModalRoute.of(context).settings.arguments;
-    SheekhModel givenSheekh = args.sheekhModel;
-    BookCategoriesModel category = args.categoriesModel;
+    // BookCategoryScreenArgument args = ModalRoute.of(context).settings.arguments;
+    // SheekhModel givenSheekh = args.sheekhModel;
+    // BookCategoriesModel category = args.categoriesModel;
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
@@ -83,7 +78,7 @@ class GivenSheekhBooksScreen extends StatelessWidget {
         ),
       ),
       body: FutureBuilder(
-        future: getGivenSheekhBooks(givenSheekh, category, context),
+        future: getGivenSheekhBooks(givenSheekh, category),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(

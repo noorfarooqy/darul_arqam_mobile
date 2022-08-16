@@ -3,6 +3,7 @@ import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/SheekhModel.dart';
 import 'package:darularqam/screens/CategoriesScreen.dart';
+import 'package:darularqam/screens/GivenSheekhBooksScreen.dart';
 import 'package:darularqam/services/book_services.dart';
 import 'package:darularqam/services/lesson_services.dart';
 import 'package:darularqam/services/sheekh_services.dart';
@@ -122,36 +123,50 @@ class _HomePageScreenState extends State<HomePageScreen> {
                           shrinkWrap: true,
                           itemCount: sheekhLength,
                           itemBuilder: (context, index) {
-                            return Container(
-                              margin: EdgeInsets.all(5),
-                              child: Column(
-                                children: [
-                                  Container(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.1,
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.3,
-                                    decoration: BoxDecoration(
-                                      color: ColorCodesModel.swatch1,
-                                      borderRadius: BorderRadius.circular(10),
-                                      image: DecorationImage(
-                                        image: AssetImage(
-                                            'assets/images/logo2.png'),
-                                        fit: BoxFit.contain,
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CategoriesScreen(
+                                            givenSheekh: SheekhModel(
+                                                sheekhServices
+                                                    .sheekhList[index]),
+                                          )),
+                                );
+                              },
+                              child: Container(
+                                margin: EdgeInsets.all(5),
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.1,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      decoration: BoxDecoration(
+                                        color: ColorCodesModel.swatch1,
+                                        borderRadius: BorderRadius.circular(10),
+                                        image: DecorationImage(
+                                          image: AssetImage(
+                                              'assets/images/logo2.png'),
+                                          fit: BoxFit.contain,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.3,
-                                    child: Text(
-                                      sheekhServices.sheekhList[index]
-                                          ['sheekh_name'],
-                                      overflow: TextOverflow.ellipsis,
-                                      textAlign: TextAlign.center,
+                                    Container(
+                                      width: MediaQuery.of(context).size.width *
+                                          0.3,
+                                      child: Text(
+                                        sheekhServices.sheekhList[index]
+                                            ['sheekh_name'],
+                                        overflow: TextOverflow.ellipsis,
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           }),
@@ -497,6 +512,9 @@ class _HomePageScreenState extends State<HomePageScreen> {
           ],
         ),
       )),
+      bottomNavigationBar: BuildCustomBottomNavigationWidget(
+        currentIndex: 0,
+      ),
     );
   }
 }

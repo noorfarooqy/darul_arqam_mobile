@@ -14,11 +14,13 @@ class LessonModel {
     lessonUpdatedAt = data["updated_at"];
     lessonAudioUrl = data["lesson_audio_url"];
     lessonFileSize = (double.parse(data["file_size"].toString()) / 1000000);
+    print('setting lessons');
     sheekhInfo = SheekhModel(data["sheekh_info"]);
     if (data["book_info"].runtimeType == BookModel)
       bookInfo = data["book_info"];
     else
       bookInfo = BookModel(data["book_info"]) ?? null;
+    print('setting books');
   }
   int lessonId;
   int bookId;

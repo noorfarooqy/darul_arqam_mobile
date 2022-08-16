@@ -1,4 +1,5 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/SermonModel.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class SermonListViewBuilder extends StatelessWidget {
       itemBuilder: (context, index) {
         AudioPlayer audioPlayer;
         return Card(
+          color: ColorCodesModel.swatch1,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -27,7 +29,7 @@ class SermonListViewBuilder extends StatelessWidget {
                   minRadius: 10,
                   backgroundColor: Colors.blue,
                   child: Text(
-                    (index+1).toString(),
+                    (index + 1).toString(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -38,14 +40,12 @@ class SermonListViewBuilder extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         SizedBox(
-                          width:MediaQuery.of(context).size.width * 0.65,
+                          width: MediaQuery.of(context).size.width * 0.65,
                           child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 sermons[index].sermonTitle,
@@ -53,14 +53,12 @@ class SermonListViewBuilder extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(sermons[index]
-                                  .sheekhInfo
-                                  .sheekhName),
+                              Text(sermons[index].sheekhInfo.sheekhName),
                               Text(
                                 double.parse(sermons[index]
-                                    .sermonFileSize
-                                    .toString())
-                                    .toStringAsFixed(2) +
+                                            .sermonFileSize
+                                            .toString())
+                                        .toStringAsFixed(2) +
                                     ' MB',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -70,17 +68,15 @@ class SermonListViewBuilder extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          child:
-                          Icon(Icons.play_circle_outline),
-                          onTap: ()async{
+                          child: Icon(Icons.play_circle_outline),
+                          onTap: () async {
                             audioPlayer = AudioPlayer();
-                            Navigator.pushNamed(context,
-                                '/sermonAudioPlayer', arguments: {
-                                  'sermonModel' : sermons[index],
-                                  'audioPlayer' : audioPlayer,
+                            Navigator.pushNamed(context, '/sermonAudioPlayer',
+                                arguments: {
+                                  'sermonModel': sermons[index],
+                                  'audioPlayer': audioPlayer,
                                 });
                           },
-
                         ),
                       ],
                     ),

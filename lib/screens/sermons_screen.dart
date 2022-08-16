@@ -2,7 +2,11 @@ import 'package:darularqam/models/ApiEndpoints.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/SermonModel.dart';
+import 'package:darularqam/services/sermon_services.dart';
+import 'package:darularqam/widgets/books_listview_shimmer.dart';
+import 'package:darularqam/widgets/custom_app_bar.dart';
 import 'package:darularqam/widgets/custom_bottom_navigation.dart';
+import 'package:darularqam/widgets/custom_error_widget.dart';
 import 'package:darularqam/widgets/sermon_list_view_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -12,21 +16,13 @@ import 'package:toast/toast.dart';
 
 class SermonScreen extends StatelessWidget {
   getSermonsList(BuildContext context) async {
-    CustomHttpRequestModel requestModel = CustomHttpRequestModel();
-    Response response =
-        await requestModel.makeApiRequest(url: ApiEndpoints.getLatestSermons);
-
-    if (response.statusCode != 200) return -1;
-    var jsonResponse = convert.jsonDecode(response.body);
-    if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(),
-          backgroundColor: Colors.red, duration: Toast.lengthLong);
-    }
-    var lessonList = jsonResponse["data"];
-    int lessonCount = lessonList.length;
+    SermonServices sermonServices = SermonServices();
+    await sermonServices.getLatestSermons();
+    List sermonList = sermonServices.sermonList;
+    int lessonCount = sermonList.length;
     List<SermonModel> sermons = [];
     for (int i = 0; i < lessonCount; i++) {
-      sermons.add(SermonModel(lessonList[i]));
+      sermons.add(SermonModel(sermonList[i]));
     }
     return sermons;
   }
@@ -34,41 +30,15 @@ class SermonScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: customAppBar(),
       body: SafeArea(
         child: Stack(
           // overflow: Overflow.visible,
           children: <Widget>[
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        border: Border.all(
-                            color: Colors.grey.shade200,
-                            style: BorderStyle.solid),
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Image(
-                          height: 40,
-                          image: AssetImage('assets/images/logo2.png'),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            'DAARUL-ARQAM',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 20,
-                                color: ColorCodesModel.swatch4),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
@@ -81,21 +51,12 @@ class SermonScreen extends StatelessWidget {
                     future: getSermonsList(context),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
+                        return BooksListViewShimmer();
                       } else if (snapshot.hasError) {
                         print(snapshot.error);
                         return Center(
                           child: Text(
                               'This is embarrassing. Something went wrong '),
-                        );
-                      }
-                      if (snapshot.data == -1) {
-                        return Center(
-                          child: Text(
-                              'We are sorry. Our server is experiencing some problems.'
-                              ' Try again '),
                         );
                       }
                       List<SermonModel> sermons = snapshot.data;

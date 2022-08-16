@@ -1,13 +1,13 @@
 import 'package:darularqam/screens/AudioPlayerScreen.dart';
-import 'package:darularqam/screens/BuugaagtaScreen.dart';
+import 'package:darularqam/screens/books_screen.dart';
 import 'package:darularqam/screens/CategoriesScreen.dart';
-import 'package:darularqam/screens/DuruusScreen.dart';
+import 'package:darularqam/screens/lesson_screen.dart';
 import 'package:darularqam/screens/GivenBookLessonsScreen.dart';
 import 'package:darularqam/screens/GivenSheekhBooksScreen.dart';
 import 'package:darularqam/screens/HomePageScreen.dart';
 import 'package:darularqam/screens/SermonAudioPlayer.dart';
-import 'package:darularqam/screens/SermonScreen.dart';
-import 'package:darularqam/screens/SettingsScreen.dart';
+import 'package:darularqam/screens/sermons_screen.dart';
+import 'package:darularqam/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

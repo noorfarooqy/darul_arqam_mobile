@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/LessonModel.dart';
 import 'package:flutter/material.dart';
-
 
 class LessonListViewBuilder extends StatelessWidget {
   const LessonListViewBuilder({
@@ -19,7 +19,8 @@ class LessonListViewBuilder extends StatelessWidget {
       itemBuilder: (context, index) {
         AudioPlayer audioPlayer;
         return Card(
-          child: Padding(
+          child: Container(
+            color: ColorCodesModel.swatch1,
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: <Widget>[
@@ -39,14 +40,12 @@ class LessonListViewBuilder extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Row(
-                      mainAxisAlignment:
-                      MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         SizedBox(
-                          width:MediaQuery.of(context).size.width * 0.65,
+                          width: MediaQuery.of(context).size.width * 0.65,
                           child: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
                                 lessons[index].lessonTitle,
@@ -54,14 +53,12 @@ class LessonListViewBuilder extends StatelessWidget {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Text(lessons[index]
-                                  .sheekhInfo
-                                  .sheekhName),
+                              Text(lessons[index].sheekhInfo.sheekhName),
                               Text(
                                 double.parse(lessons[index]
-                                    .lessonFileSize
-                                    .toString())
-                                    .toStringAsFixed(2) +
+                                            .lessonFileSize
+                                            .toString())
+                                        .toStringAsFixed(2) +
                                     ' MB',
                                 style: TextStyle(
                                   fontSize: 11,
@@ -71,17 +68,15 @@ class LessonListViewBuilder extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          child:
-                          Icon(Icons.play_circle_outline),
-                          onTap: ()async{
+                          child: Icon(Icons.play_circle_outline),
+                          onTap: () async {
                             audioPlayer = AudioPlayer();
-                            Navigator.pushNamed(context,
-                                '/audioPlayerScreen', arguments: {
-                                  'lessonModel' : lessons[index],
-                                  'audioPlayer' : audioPlayer,
+                            Navigator.pushNamed(context, '/audioPlayerScreen',
+                                arguments: {
+                                  'lessonModel': lessons[index],
+                                  'audioPlayer': audioPlayer,
                                 });
                           },
-
                         ),
                       ],
                     ),

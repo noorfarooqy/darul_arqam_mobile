@@ -1,4 +1,5 @@
 import 'package:darularqam/models/BookModel.dart';
+import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:flutter/material.dart';
 
 class BookListBuilder extends StatelessWidget {
@@ -16,7 +17,8 @@ class BookListBuilder extends StatelessWidget {
       itemCount: books.length,
       itemBuilder: (context, index) {
         return Card(
-          child: Padding(
+          child: Container(
+            color: ColorCodesModel.swatch1,
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: <Widget>[

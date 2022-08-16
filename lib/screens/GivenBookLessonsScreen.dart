@@ -3,6 +3,7 @@ import 'package:darularqam/models/BookModel.dart';
 import 'package:darularqam/models/ColorCodesModel.dart';
 import 'package:darularqam/models/CustomHttpRequest.dart';
 import 'package:darularqam/models/LessonModel.dart';
+import 'package:darularqam/services/book_services.dart';
 import 'package:darularqam/widgets/custom_error_widget.dart';
 import 'package:darularqam/widgets/lesson_list_view_builder.dart';
 import 'package:flutter/material.dart';
@@ -13,17 +14,10 @@ import 'package:toast/toast.dart';
 
 class GivenBookLessonsScreen extends StatelessWidget {
   getGivenBookLessons(BookModel bookModel, BuildContext context) async {
-    CustomHttpRequestModel requestModel = CustomHttpRequestModel();
-    Response response = await requestModel.makeApiRequest(
-        url: ApiEndpoints.getGivenBookLessons + bookModel.bookId.toString());
-
-    if (response.statusCode != 200) return -1;
-    var jsonResponse = convert.jsonDecode(response.body);
-    if (jsonResponse["isSuccess"] == false) {
-      Toast.show(jsonResponse["errorMessage"].toString(),
-          backgroundColor: Colors.red, duration: Toast.lengthLong);
-    }
-    var lessonList = jsonResponse["data"]["casharada"];
+    BookServices bookServices = BookServices();
+    await bookServices.getBookLessons(bookModel);
+    List lessonList = bookServices.bookLessons;
+    print('--lessons--');
     int lessonCount = lessonList.length;
     List<LessonModel> lessons = [];
     for (int i = 0; i < lessonCount; i++) {
